@@ -1,5 +1,6 @@
 function on_health_zero () {
     if (Health == 0) {
+        music.play(music.stringPlayable("G C5 G C5 F E D C ", 120), music.PlaybackMode.UntilDone)
         info.changeLifeBy(-1)
         Health = 5
         info.stopCountdown()
@@ -16,6 +17,11 @@ function on_health_zero () {
 info.onCountdownEnd(function () {
     game.gameOver(true)
 })
+info.onScore(10, function () {
+    music.play(music.stringPlayable("G C5 G E G C5 G G ", 120), music.PlaybackMode.UntilDone)
+    game.setGameOverMessage(true, "\"SECRET ENDING YOU WIN\"")
+    game.gameOver(true)
+})
 sprites.onOverlap(SpriteKind.Enemy, SpriteKind.Player, function (sprite, otherSprite) {
     if (IFrameCooldown == 0) {
         IFrameCooldown = 1
@@ -30,11 +36,87 @@ sprites.onOverlap(SpriteKind.Enemy, SpriteKind.Player, function (sprite, otherSp
 info.onLifeZero(function () {
     game.gameOver(false)
 })
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Food, function (sprite, otherSprite) {
+    info.changeScoreBy(1)
+    sprites.destroy(Banana)
+    Banana = sprites.create(img`
+        . . b b b b . . 
+        . b 5 5 5 5 b . 
+        b 5 d 3 3 d 5 b 
+        b 5 3 5 5 1 5 b 
+        c 5 3 5 5 1 d c 
+        c d d 1 1 d d c 
+        . f d d d d f . 
+        . . f f f f . . 
+        `, SpriteKind.Food)
+    Banana.setPosition(randint(0, 160), randint(0, 120))
+    animation.runImageAnimation(
+    Banana,
+    [img`
+        . . b b b b . . 
+        . b 5 5 5 5 b . 
+        b 5 d 3 3 d 5 b 
+        b 5 3 5 5 1 5 b 
+        c 5 3 5 5 1 d c 
+        c d d 1 1 d d c 
+        . f d d d d f . 
+        . . f f f f . . 
+        `,img`
+        . . b b b . . . 
+        . b 5 5 5 b . . 
+        b 5 d 3 d 5 b . 
+        b 5 3 5 1 5 b . 
+        c 5 3 5 1 d c . 
+        c 5 d 1 d d c . 
+        . f d d d f . . 
+        . . f f f . . . 
+        `,img`
+        . . . b b . . . 
+        . . b 5 5 b . . 
+        . b 5 d 1 5 b . 
+        . b 5 3 1 5 b . 
+        . c 5 3 1 d c . 
+        . c 5 1 d d c . 
+        . . f d d f . . 
+        . . . f f . . . 
+        `,img`
+        . . . b b . . . 
+        . . b 5 5 b . . 
+        . . b 1 1 b . . 
+        . . b 5 5 b . . 
+        . . b d d b . . 
+        . . c d d c . . 
+        . . c 3 3 c . . 
+        . . . f f . . . 
+        `,img`
+        . . . b b . . . 
+        . . b 5 5 b . . 
+        . b 5 1 d 5 b . 
+        . b 5 1 3 5 b . 
+        . c d 1 3 5 c . 
+        . c d d 1 5 c . 
+        . . f d d f . . 
+        . . . f f . . . 
+        `,img`
+        . . . b b b . . 
+        . . b 5 5 5 b . 
+        . b 5 d 3 d 5 b 
+        . b 5 1 5 3 5 b 
+        . c d 1 5 3 5 c 
+        . c d d 1 d 5 c 
+        . . f d d d f . 
+        . . . f f f . . 
+        `],
+    100,
+    true
+    )
+})
 let IFrameCooldown = 0
 let Dino: Sprite = null
 let Health = 0
+let Banana: Sprite = null
 let Monkey: Sprite = null
-let index = 0
+music.play(music.createSong(hex`0078000408020303001c0001dc00690000045e0100040000000000000000000005640001040003600000000400011904000800011d08000c0001200c001000011d10001400012014001800012418001c0001271c002000012420002400012024002800011d28002c0001202c003000011d30003400011934003800011938003c0001193c004000011905001c000f0a006400f4010a00000400000000000000000000000000000000022a0000000400012508000c00012910001400012518001c00012920002400012528002c00012930003400012506001c00010a006400f401640000040000000000000000000000000000000002240000000400010d08000c00011110001400011418001c00010d20002400011128002c000114`), music.PlaybackMode.InBackground)
 scene.setBackgroundImage(img`
     7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
     7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
@@ -175,6 +257,16 @@ Monkey = sprites.create(img`
     . . . f d d c d d b b d f . . . 
     . . . . f f f f f f f f f . . . 
     `, SpriteKind.Player)
+Banana = sprites.create(img`
+    . . b b b b . . 
+    . b 5 5 5 5 b . 
+    b 5 d 3 3 d 5 b 
+    b 5 3 5 5 1 5 b 
+    c 5 3 5 5 1 d c 
+    c d d 1 1 d d c 
+    . f d d d d f . 
+    . . f f f f . . 
+    `, SpriteKind.Food)
 Health = 5
 info.setLife(3)
 Monkey.setStayInScreen(true)
@@ -206,9 +298,72 @@ Dino = sprites.create(img`
     `, SpriteKind.Enemy)
 controller.moveSprite(Monkey, 100, 100)
 info.startCountdown(30)
-Monkey.setPosition(22, 26)
+Monkey.setPosition(23, 27)
 Dino.setPosition(126, 89)
-Dino.follow(Monkey, 40)
+Dino.follow(Monkey, 50)
+animation.runImageAnimation(
+Banana,
+[img`
+    . . b b b b . . 
+    . b 5 5 5 5 b . 
+    b 5 d 3 3 d 5 b 
+    b 5 3 5 5 1 5 b 
+    c 5 3 5 5 1 d c 
+    c d d 1 1 d d c 
+    . f d d d d f . 
+    . . f f f f . . 
+    `,img`
+    . . b b b . . . 
+    . b 5 5 5 b . . 
+    b 5 d 3 d 5 b . 
+    b 5 3 5 1 5 b . 
+    c 5 3 5 1 d c . 
+    c 5 d 1 d d c . 
+    . f d d d f . . 
+    . . f f f . . . 
+    `,img`
+    . . . b b . . . 
+    . . b 5 5 b . . 
+    . b 5 d 1 5 b . 
+    . b 5 3 1 5 b . 
+    . c 5 3 1 d c . 
+    . c 5 1 d d c . 
+    . . f d d f . . 
+    . . . f f . . . 
+    `,img`
+    . . . b b . . . 
+    . . b 5 5 b . . 
+    . . b 1 1 b . . 
+    . . b 5 5 b . . 
+    . . b d d b . . 
+    . . c d d c . . 
+    . . c 3 3 c . . 
+    . . . f f . . . 
+    `,img`
+    . . . b b . . . 
+    . . b 5 5 b . . 
+    . b 5 1 d 5 b . 
+    . b 5 1 3 5 b . 
+    . c d 1 3 5 c . 
+    . c d d 1 5 c . 
+    . . f d d f . . 
+    . . . f f . . . 
+    `,img`
+    . . . b b b . . 
+    . . b 5 5 5 b . 
+    . b 5 d 3 d 5 b 
+    . b 5 1 5 3 5 b 
+    . c d 1 5 3 5 c 
+    . c d d 1 d 5 c 
+    . . f d d d f . 
+    . . . f f f . . 
+    `],
+100,
+true
+)
 game.onUpdate(function () {
     on_health_zero()
+})
+game.onUpdateInterval(5000, function () {
+    Banana.setPosition(randint(10, 140), randint(10, 100))
 })
